@@ -1,6 +1,7 @@
-var express = require("express")
-var app=express()
-var port=3000
+const express = require("express")
+const dbData = require("./mongodb")
+const app=express()
+const port=process.env.PORT||3000
 
 app.get("/state",(req,res)=>{
     if (!req.query.q){
@@ -9,22 +10,24 @@ app.get("/state",(req,res)=>{
             }
         ])
     }
-    var state = "Database"
-    state=state.toLowerCase()
-    inp=(req.query.q).toLowerCase()
-    if(state.match([inp])!=null){
-        
-    }
-    
-    res.send([
-        {
-            "State":"kar",
-            "district_code":14,
-            "district":"Karnataka"
+    var inp=(req.query.q).toLowerCase()
+    data = dbData.filter((error,data)=>{
+        var state = data["State/Union territory*"].toLowerCase()
+        if (state.match([inp])){
+            return data
         }
-    ])
+    })
+    var states=[]
+    data.forEach((state) => {
+        states.push({
+            "State":state["State/Union territory*"],
+            "district_code":state["District Code"],
+            "district":state["District"]
+        })
+    });
+    res.send(states)
 })
 
 app.listen(port,()=>{
-    console.log("Running on port 3000")
+    console.log("Running on port "+port)
 })
