@@ -1,5 +1,5 @@
 const express = require("express")
-const dbData = require("./mongodb")
+const dbData = require("./mongodata")
 const app=express()
 const port=process.env.PORT||3000
 
